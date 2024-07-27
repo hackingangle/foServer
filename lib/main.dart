@@ -8,91 +8,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Admin Panel',
+      home: DashboardPage(),
       theme: ThemeData(
-        primaryColor: Colors.teal,
-        fontFamily: 'Montserrat',
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-      home: AdminDashboard(),
-    );
-  }
-}
-
-class AdminDashboard extends StatefulWidget {
-  @override
-  _AdminDashboardState createState() => _AdminDashboardState();
-}
-
-class _AdminDashboardState extends State<AdminDashboard> {
-  int _selectedIndex = 0;
-
-  static final List<Widget> _pages = <Widget>[
-    DashboardPage(),
-    UsersPage(),
-    SettingsPage(),
-  ];
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Admin Panel'),
-        elevation: 0,
-        backgroundColor: Colors.teal,
-      ),
-      body: Row(
-        children: <Widget>[
-          NavigationRail(
-            selectedIndex: _selectedIndex,
-            onDestinationSelected: _onItemTapped,
-            labelType: NavigationRailLabelType.all,
-            backgroundColor: Colors.teal.shade100,
-            leading: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                children: [
-                  CircleAvatar(
-                    radius: 30,
-                    backgroundImage: AssetImage('assets/admin_avatar.png'),
-                  ),
-                  SizedBox(height: 10),
-                  Text('Admin', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                ],
-              ),
-            ),
-            destinations: const <NavigationRailDestination>[
-              NavigationRailDestination(
-                icon: Icon(Icons.dashboard),
-                selectedIcon: Icon(Icons.dashboard, color: Colors.teal),
-                label: Text('Dashboard'),
-              ),
-              NavigationRailDestination(
-                icon: Icon(Icons.people),
-                selectedIcon: Icon(Icons.people, color: Colors.teal),
-                label: Text('Users'),
-              ),
-              NavigationRailDestination(
-                icon: Icon(Icons.settings),
-                selectedIcon: Icon(Icons.settings, color: Colors.teal),
-                label: Text('Settings'),
-              ),
-            ],
-          ),
-          const VerticalDivider(thickness: 1, width: 1),
-          Expanded(
-            child: AnimatedSwitcher(
-              duration: Duration(milliseconds: 300),
-              child: _pages[_selectedIndex],
-            ),
-          ),
-        ],
+        primarySwatch: Colors.orange,
       ),
     );
   }
@@ -101,103 +19,200 @@ class _AdminDashboardState extends State<AdminDashboard> {
 class DashboardPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('Dashboard', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-          SizedBox(height: 20),
-          Card(
-            elevation: 4,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            child: ListTile(
-              leading: Icon(Icons.analytics, color: Colors.teal),
-              title: Text('Statistics'),
-              subtitle: Text('Description of some statistics'),
-            ),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Dashboard'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.search),
+            onPressed: () {},
           ),
-          SizedBox(height: 10),
-          Card(
-            elevation: 4,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            child: ListTile(
-              leading: Icon(Icons.trending_up, color: Colors.teal),
-              title: Text('Trends Analysis'),
-              subtitle: Text('Description of some trend analysis'),
-            ),
+          CircleAvatar(
+            backgroundImage: NetworkImage('https://via.placeholder.com/150'),
           ),
         ],
+      ),
+      drawer: Drawer(
+        child: ListView(
+          children: <Widget>[
+            DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.orange,
+              ),
+              child: Text('Promage'),
+            ),
+            ListTile(
+              title: Text('Dashboard'),
+              leading: Icon(Icons.dashboard),
+              onTap: () {},
+            ),
+            ListTile(
+              title: Text('Projects'),
+              leading: Icon(Icons.work),
+              onTap: () {},
+            ),
+            ListTile(
+              title: Text('Tasks'),
+              leading: Icon(Icons.task),
+              onTap: () {},
+            ),
+            ListTile(
+              title: Text('Time Log'),
+              leading: Icon(Icons.timelapse),
+              onTap: () {},
+            ),
+            ListTile(
+              title: Text('Resource Mgmt'),
+              leading: Icon(Icons.people),
+              onTap: () {},
+            ),
+            ListTile(
+              title: Text('Users'),
+              leading: Icon(Icons.person),
+              onTap: () {},
+            ),
+          ],
+        ),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ListView(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                InfoCard(
+                  title: 'Total revenue',
+                  value: '\$53,00989',
+                  change: '12% increase from last month',
+                ),
+                InfoCard(
+                  title: 'Projects',
+                  value: '95 /100',
+                  change: '10% decrease from last month',
+                ),
+                InfoCard(
+                  title: 'Time spent',
+                  value: '1022 /1300 Hrs',
+                  change: '8% increase from last month',
+                ),
+                InfoCard(
+                  title: 'Resources',
+                  value: '101 /120',
+                  change: '2% increase from last month',
+                ),
+              ],
+            ),
+            SizedBox(height: 16),
+            ProjectSummary(),
+            SizedBox(height: 16),
+            OverallProgress(),
+          ],
+        ),
       ),
     );
   }
 }
 
-class UsersPage extends StatelessWidget {
+class InfoCard extends StatelessWidget {
+  final String title;
+  final String value;
+  final String change;
+
+  InfoCard({required this.title, required this.value, required this.change});
+
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('User Management', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-          SizedBox(height: 20),
-          Card(
-            elevation: 4,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            child: ListTile(
-              leading: Icon(Icons.person_add, color: Colors.teal),
-              title: Text('Add New User'),
-              subtitle: Text('Description for adding a new user'),
-            ),
+    return Expanded(
+      child: Card(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(title, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              Text(value, style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+              Text(change, style: TextStyle(color: Colors.green)),
+            ],
           ),
-          SizedBox(height: 10),
-          Card(
-            elevation: 4,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            child: ListTile(
-              leading: Icon(Icons.person_search, color: Colors.teal),
-              title: Text('View Users'),
-              subtitle: Text('Description for viewing users'),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
 }
 
-class SettingsPage extends StatelessWidget {
+class ProjectSummary extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('Settings', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-          SizedBox(height: 20),
-          Card(
-            elevation: 4,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            child: ListTile(
-              leading: Icon(Icons.security, color: Colors.teal),
-              title: Text('Security Settings'),
-              subtitle: Text('Description for security settings'),
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Project summary', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            DataTable(
+              columns: [
+                DataColumn(label: Text('Name')),
+                DataColumn(label: Text('Project manager')),
+                DataColumn(label: Text('Due date')),
+                DataColumn(label: Text('Status')),
+                DataColumn(label: Text('Progress')),
+              ],
+              rows: [
+                DataRow(cells: [
+                  DataCell(Text('Nelsa web development')),
+                  DataCell(Text('Om prakash sao')),
+                  DataCell(Text('May 25, 2023')),
+                  DataCell(Text('Completed')),
+                  DataCell(Text('100%')),
+                ]),
+                DataRow(cells: [
+                  DataCell(Text('Datascale AI app')),
+                  DataCell(Text('Neilsan mando')),
+                  DataCell(Text('Jun 20, 2023')),
+                  DataCell(Text('Delayed')),
+                  DataCell(Text('35%')),
+                ]),
+                DataRow(cells: [
+                  DataCell(Text('Media channel branding')),
+                  DataCell(Text('Tiruvelly priya')),
+                  DataCell(Text('Jul 13, 2023')),
+                  DataCell(Text('At risk')),
+                  DataCell(Text('68%')),
+                ]),
+              ],
             ),
-          ),
-          SizedBox(height: 10),
-          Card(
-            elevation: 4,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            child: ListTile(
-              leading: Icon(Icons.language, color: Colors.teal),
-              title: Text('Language Settings'),
-              subtitle: Text('Description for language settings'),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class OverallProgress extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Overall Progress', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            SizedBox(height: 16),
+            Center(
+              child: CircularProgressIndicator(
+                value: 0.72,
+                backgroundColor: Colors.grey,
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.orange),
+                strokeWidth: 8.0,
+              ),
             ),
-          ),
-        ],
+            SizedBox(height: 16),
+            Center(child: Text('72% Completed')),
+          ],
+        ),
       ),
     );
   }
