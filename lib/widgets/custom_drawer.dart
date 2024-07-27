@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../screens/book_list_screen.dart';
+
 class CustomDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -34,6 +36,14 @@ class CustomDrawer extends StatelessWidget {
                 ),
               ],
             ),
+          ),
+          ListTile(
+            leading: Icon(Icons.book),
+            title: Text('图书管理'),
+            onTap: () {
+              Navigator.of(context)
+                  .pushReplacementNamed(BookListScreen.routeName);
+            },
           ),
           ListTile(
             leading: Icon(Icons.dashboard),
