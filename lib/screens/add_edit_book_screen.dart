@@ -13,7 +13,15 @@ class AddEditBookScreen extends StatefulWidget {
 
 class _AddEditBookScreenState extends State<AddEditBookScreen> {
   final _formKey = GlobalKey<FormState>();
-  var _editedBook = Book(id: 0, name: '', author: '', description: '', coverImageUrl: '');
+  var _editedBook = Book(
+    id: null,
+    name: '',
+    author: '',
+    description: '',
+    coverImageUrl: '',
+    createdAt: '',
+    updatedAt: '',
+  );
   var _initValues = {
     'name': '',
     'author': '',
@@ -21,7 +29,6 @@ class _AddEditBookScreenState extends State<AddEditBookScreen> {
     'coverImageUrl': '',
   };
   var _isInit = true;
-  var _isLoading = false;
 
   @override
   void didChangeDependencies() {
@@ -36,49 +43,22 @@ class _AddEditBookScreenState extends State<AddEditBookScreen> {
           'coverImageUrl': _editedBook.coverImageUrl,
         };
       }
-      _isInit = false;
     }
+    _isInit = false;
     super.didChangeDependencies();
   }
 
-  Future<void> _saveForm() async {
-    final isValid = _formKey.currentState?.validate();
-    if (!isValid!) {
+  void _saveForm() {
+    final isValid = _formKey.currentState!.validate();
+    if (!isValid) {
       return;
     }
-    _formKey.currentState?.save();
-    setState(() {
-      _isLoading = true;
-    });
-
-    if (_editedBook.id != 0) {
-      await Provider.of<BookProvider>(context, listen: false).updateBook(_editedBook);
+    _formKey.currentState!.save();
+    if (_editedBook.id != null) {
+      Provider.of<BookProvider>(context, listen: false).updateBook(_editedBook);
     } else {
-      try {
-        await Provider.of<BookProvider>(context, listen: false).addBook(_editedBook);
-      } catch (error) {
-        await showDialog(
-          context: context,
-          builder: (ctx) => AlertDialog(
-            title: Text('发生错误！'),
-            content: Text('添加图书失败，请重试。'),
-            actions: [
-              TextButton(
-                child: Text('确定'),
-                onPressed: () {
-                  Navigator.of(ctx).pop();
-                },
-              )
-            ],
-          ),
-        );
-      }
+      Provider.of<BookProvider>(context, listen: false).addBook(_editedBook);
     }
-
-    setState(() {
-      _isLoading = false;
-    });
-
     Navigator.of(context).pop();
   }
 
@@ -86,7 +66,7 @@ class _AddEditBookScreenState extends State<AddEditBookScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(_editedBook.id != 0 ? '编辑图书' : '添加图书'),
+        title: Text(_editedBook.id != null ? '编辑图书' : '添加图书'),
         actions: [
           IconButton(
             icon: Icon(Icons.save),
@@ -94,9 +74,7 @@ class _AddEditBookScreenState extends State<AddEditBookScreen> {
           ),
         ],
       ),
-      body: _isLoading
-          ? Center(child: CircularProgressIndicator())
-          : Padding(
+      body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
@@ -113,10 +91,12 @@ class _AddEditBookScreenState extends State<AddEditBookScreen> {
                     author: _editedBook.author,
                     description: _editedBook.description,
                     coverImageUrl: _editedBook.coverImageUrl,
+                    createdAt: _editedBook.createdAt,
+                    updatedAt: DateTime.now().toIso8601String(),
                   );
                 },
                 validator: (value) {
-                  if (value == null || value.isEmpty) {
+                  if (value!.isEmpty) {
                     return '请输入书名';
                   }
                   return null;
@@ -133,10 +113,12 @@ class _AddEditBookScreenState extends State<AddEditBookScreen> {
                     author: value!,
                     description: _editedBook.description,
                     coverImageUrl: _editedBook.coverImageUrl,
+                    createdAt: _editedBook.createdAt,
+                    updatedAt: DateTime.now().toIso8601String(),
                   );
                 },
                 validator: (value) {
-                  if (value == null || value.isEmpty) {
+                  if (value!.isEmpty) {
                     return '请输入作者';
                   }
                   return null;
@@ -154,10 +136,12 @@ class _AddEditBookScreenState extends State<AddEditBookScreen> {
                     author: _editedBook.author,
                     description: value!,
                     coverImageUrl: _editedBook.coverImageUrl,
+                    createdAt: _editedBook.createdAt,
+                    updatedAt: DateTime.now().toIso8601String(),
                   );
                 },
                 validator: (value) {
-                  if (value == null || value.isEmpty) {
+                  if (value!.isEmpty) {
                     return '请输入描述';
                   }
                   return null;
@@ -175,15 +159,13 @@ class _AddEditBookScreenState extends State<AddEditBookScreen> {
                     author: _editedBook.author,
                     description: _editedBook.description,
                     coverImageUrl: value!,
+                    createdAt: _editedBook.createdAt,
+                    updatedAt: DateTime.now().toIso8601String(),
                   );
                 },
                 validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return '请输入封面图片URL';
-                  }
-                  final uri = Uri.tryParse(value);
-                  if (uri == null || !uri.hasAbsolutePath) {
-                    return '请输入有效的URL';
+                  if (value!.isEmpty) {
+                    return '请输入封面图片的URL';
                   }
                   return null;
                 },
