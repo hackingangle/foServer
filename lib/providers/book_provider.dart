@@ -61,11 +61,15 @@ class BookProvider with ChangeNotifier {
   Future<void> updateBook(Book book) async {
     final url = Uri.parse('http://$apiHost:8089/books/${book.id}');
     try {
+      final requestBody = json.encode(book.toUpdateJson());
       final response = await client.put(
         url,
         headers: {'Content-Type': 'application/json'},
-        body: json.encode(book.toJson()),
+        body: requestBody,
       );
+      final respBody = response.body;
+      // 打印book的json
+      print("[url][$url][request][$requestBody][resp][$respBody]");
       if (response.statusCode == 200) {
         await fetchBooks();
       } else {

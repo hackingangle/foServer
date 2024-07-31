@@ -40,4 +40,14 @@ class Book {
       'UpdatedAt': updatedAt,
     };
   }
+
+  Map<String, dynamic> toUpdateJson() {
+    return {
+      'ID': id,
+      'name': name,
+      'author': author,
+      'description': description,
+      'cover_image_url': coverImageUrl,
+    };
+  }
 }
